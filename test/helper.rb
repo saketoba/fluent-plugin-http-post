@@ -22,7 +22,7 @@ unless ENV.has_key?('VERBOSE')
   $log = nulllogger
 end
 
-require 'fluent/plugin/out_ikachan'
+require 'fluent/plugin/out_http_post'
 
 class Test::Unit::TestCase
 end
