@@ -1,50 +1,35 @@
-# fluent-plugin-ikachan
+# fluent-plugin-http-post
+## Overview
+### HttpPostOutput
+fluentからpostリクエストを投げるoutput-pluginです。
+[fluentd-plugin-ikachan](https://github.com/tagomoris/fluent-plugin-ikachan)を流用させていただきました。この場を借りてお礼申し上げます。
 
-## Component
+## Usage
 
-### IkachanOutput
+### Configuration
 
-Plugin to send message to IRC, over IRC-HTTP bridge 'Ikachan' by yappo.
-
-About Ikachan:
- * https://metacpan.org/module/ikachan
- * http://blog.yappo.jp/yappo/archives/000760.html (Japanese)
-
-## Configuration
-
-### IkachanOutput
-
-Before testing of fluent-plugin-ikachan, you should invoke 'ikachan' process::
-
-    ### at first, install perl and cpanm (App::cpanminus)
-    cpanm App::ikachan
-    ikachan -S your.own.irc.server -P port
-
-And then, configure out_ikachan::
-
-    <match alert.**>
-      # ikachan host/port(default 4979)
-      host localhost
-      port 4979
-      # channel to notify (this means #morischan)
-      channel morischan
-      message notice: %s [%s] %s
-      out_keys tag,time,msg
-      time_key time
-      time_format %Y/%m/%d %H:%M:%S
-      tag_key tag
+    <match **>
+    type http_post
+    post_uri http://example/post
+    out_keys tag,time,msg,msg2
+    time_key time
+    time_format %Y/%m/%d %H:%M:%S
+    tag_key tag
+    _extra_postparam1 ex_param1
+    _extra_postparam2 ex_param2
+    _extra_postparam3 ex_param3
     </match>
-    
-You will got message like 'notice: alert.servicename [2012/05/10 18:51:59] alert message in attribute "msg"'.
 
-## TODO
+上記のようにconfを作ると、`http://example/post`に対し以下のパラメータをPOSTします。
 
-* implement 'tag_mapped'
-* implement 'time' and 'tag' in key_names
+    {
+    "tag"=>"#{matched tag}",
+    "time"=>"2012/12/15 10:13:54",
+    "msg"=>"param msg1",
+    "msg2"=>"param msg1",
+    "extra_postparam1"=>"ex_param1",
+    "extra_postparam2"=>"ex_param2",
+    "extra_postparam3"=>"ex_param3"
+    }
 
-## Copyright
 
-* Copyright
-  * Copyright (c) 2012- TAGOMORI Satoshi (tagomoris)
-* License
-  * Apache License, Version 2.0
